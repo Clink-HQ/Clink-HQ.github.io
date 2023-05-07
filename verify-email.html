@@ -1,1 +1,54 @@
-Hey
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Email Verification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Get the email and code from URL query params
+            const queryParams = new URLSearchParams(window.location.search);
+            var email = queryParams.get("email");
+            var code = queryParams.get("code");
+
+            if (!(email && code)) {
+                $("#message").html("Email verification link is invalid. Please check if you have clicked the right link.");
+            }
+
+            // Send an API post request to verify email
+            $.ajax({
+                url: "http://django.clinkapp.in:8000/api/v1/user/verify_email/",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "email": email,
+                    "code": code
+                }),
+                success: function (data) {
+                    // If verification is successful, show a success message
+                    if (data.successCode === "S0004") {
+                        $("#message").html("Email verification is successful!");
+                    }
+                    // If verification fails, show an error message
+                    else {
+                        $("#message").html("Email verification link is invalid. Please check if you have clicked the right link.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // If there's an error with the API request, show an error message
+                    $("#message").html("Email verification link is invalid. Please check if you have clicked the right link.");
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Email Verification</h1>
+    <p id="message">Verifying email...</p>
+</body>
+
+</html>
